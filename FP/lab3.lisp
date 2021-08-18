@@ -1,0 +1,47 @@
+(defun copy-array (array)
+    (let ((dims (array-dimensions array)))
+        (adjust-array (make-array dims :displaced-to array) dims)))
+
+(defun my-sum (nums row col)
+(let*   ((n (array-dimension nums 0))
+        (m (array-dimension nums 1))
+        (answer 0) (i 0) (j 0))
+        (loop while (< i n)
+            do
+            (when (not (equal i row))
+                (setf j 0)
+                (loop while (< j m)
+                    do
+                    (when (not (equal j col))  
+                        (setf answer (+ answer (aref nums i j))))
+                    (setf j (+ j 1))))
+            (setf i (+ i 1)))
+        (return-from my-sum answer)))
+
+(defun solve (matrix)
+(let*   ((rows (array-dimension matrix 0))
+        (columns (array-dimension matrix 1))
+        (result (copy-array matrix))
+        (currow 0) (curcolum 0))
+        (loop while (< currow rows)
+            do
+            (setf curcolum 0)
+            (loop while (< curcolum columns)
+                do
+                (setf (aref result currow curcolum) (my-sum matrix currow curcolum))
+                (setf curcolum (+ curcolum 1)))
+            (setf currow (+ currow 1)))
+        (return-from solve result)))
+
+(defun test (nums)
+    (print nums)
+    (print (solve nums))
+    (print nums)
+    (print " "))
+
+(defvar a (make-array '(2 3) :initial-element 5))
+(defvar b (make-array '(2 4) :initial-contents '((100 5 6 9)(1 2 3 8))))
+(defvar c (make-array '(4 4) :initial-contents '((100 5 6 9)(1 2 3 8)(5 10 12 1)(1 5 13 10))))
+(test a)
+(test b)
+(test c)
